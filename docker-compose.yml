@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    entrypoint: ./wait-for-it.sh -t 60 db:5432 -- npm run watch
+  db:
+    restart: always
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - "./.tmp/app:/var/lib/postgres"
+    ports:
+      - "5432:5432"
+volumes:
+  app:
